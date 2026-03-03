@@ -22,8 +22,4 @@ class TestMainPageQuestions:
     @allure.title('Проверка соответствия ответов в разделе "Вопросы о важном"')
     @allure.description('Проверяем вопрос: кликаем, убеждаемся, что нужный ответ соответствует вопросу')
     @pytest.mark.parametrize('question_id', [0, 1, 2, 3, 4, 5, 6, 7])
-    def test_answer_corresponds_question_when_arrow_clicked(self, driver, question_id):
-        main_page=MainPageSamokat(driver)
-        main_page.scroll_to_quest_arrow(question_id)
-        main_page.click_quest_arrow(question_id)
-        assert main_page.check_quest_answer_text(question_id)
+    

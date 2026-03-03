@@ -1,7 +1,5 @@
 import os
 import sys
-directory = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-sys.path.append(directory)
 from data import *
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait

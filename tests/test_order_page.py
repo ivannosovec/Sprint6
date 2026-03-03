@@ -1,25 +1,59 @@
 import os
 import sys
-directory = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-sys.path.append(directory)
-sys.path.append(directory + '\\pages')
 from pages.base_page import *
 from pages.order_page import *
 import pytest
 import allure
 from data import *
 
-class TestOrderPageOrdering:
-    @allure.title('Проверка флоу позитивного сценария создания заказа')
-    @allure.description('Проверяем обе кнопки Заказать, заполнение формы заказа, всплывающее окно с сообщением об успешном создании заказа.')
-    @pytest.mark.parametrize('dataset_id', [0, 1])
-    def test_order_creation(self, driver, dataset_id):
-        order_page=OrderPageSamokat(driver)
-        order_page.scroll_to_order_button(dataset_id)
-        order_page.click_order_button(dataset_id)
-        order_page.fill_first_form(dataset_id)
-        order_page.fill_second_form(dataset_id)
-        order_page.wait_acception_form()
-        order_page.click_accept_order_form()
-        order_page.wait_success_form()
-        assert order_page.check_order_success()
+class TestOrder:
+    @classmethod
+    def setup_class(cls):
+        cls.driver = webdriver.Chrome()
+        cls.driver.maximize_window()
+
+        cls.home_page = HomePage(cls.driver)
+        cls.order_page = OrderPage(cls.driver)
+
+    @classmethod
+    def teardown_class(cls):
+        cls.driver.quit()
+
+    def setup_method(self):
+        self.home_page.open()
+
+    @allure.title("Позитивный сценарий заказа")
+    @pytest.mark.parametrize(
+        "order_button_location, order_data",
+        [
+            ["top", TestData.ORDER_CLIENT_DATA_1],
+            ["bottom", TestData.ORDER_CLIENT_DATA_2]
+        ]
+    )
+    def test_order_positive_flow(self, order_button_location, order_data):
+        if order_button_location == "top":
+            self.home_page.click_order_button_top()
+        else:
+            self.home_page.click_order_button_bottom()
+
+        assert self.order_page.execute_order_flow(order_data)
+
+    @allure.title("Проверка перехода по логотипу Самоката")
+    @allure.description("При клике на логотип Самоката пользователь должен попасть на главную страницу")
+    def test_scooter_logo_redirect(self):
+        self.home_page.click_scooter_logo()
+
+        current_url = self.driver.current_url
+        expected_url = self.home_page.base_url
+
+        assert current_url == expected_url
+
+    @allure.title("Проверка редиректа по логотипу Яндекса")
+    @allure.description("При клике на логотип Яндекса пользователь должен попасть на главную страницу")
+    def test_yandex_logo_redirect(self):
+        self.home_page.click_yandex_logo()
+
+        current_url = self.driver.current_url
+        expected_url = self.home_page.base_url
+
+        assert current_url == expected_url
