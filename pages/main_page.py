@@ -1,8 +1,5 @@
 import os
 import sys
-directory = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-sys.path.append(directory)
-sys.path.append(directory + '\\locators')
 from base_page import *
 from data import *
 from locators.main_page_locators import *
